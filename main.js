@@ -1,4 +1,4 @@
-let path;
+let canvas; let ctx; let path;
 
 function step() {
   setNextTile();
@@ -20,9 +20,10 @@ function step() {
 }
 
 async function init() {
-  const [canvas, ctx] = getCanvas();
+  canvas = document.getElementById('canvas');
   canvas.width = WIDTH;
   canvas.height = HEIGHT;
+  ctx = canvas.getContext('2d');
   ctx.strokeStyle = 'white';
 
   resetBoard();
