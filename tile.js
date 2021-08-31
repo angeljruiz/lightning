@@ -14,8 +14,8 @@ class Tile {
   static generateType() {
     const chance = Math.random();
 
-    if (chance <= 0.4) return Math.random() >= 0.5 ? RIGHT : LEFT;
-    if (chance <= 0.75) return Math.random() >= 0.5 ? TOP : BOTTOM;
+    if (chance <= 0.45) return Math.random() >= 0.5 ? RIGHT : LEFT;
+    if (chance <= 0.85) return Math.random() >= 0.5 ? TOP : BOTTOM;
     return EMPTY;
   }
 
