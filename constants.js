@@ -1,6 +1,6 @@
 const WIDTH = 320;
 const HEIGHT = 640;
-const TILE_SIZE = 32;
+const TILE_SIZE = 16;
 const ROWS = WIDTH / TILE_SIZE;
 const COLS = HEIGHT / TILE_SIZE;
 const [START, CURRENT, WALL, OPEN, CLOSED, END] = [1, 2, 3, 4, 5, 6];

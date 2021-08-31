@@ -128,14 +128,14 @@ async function animatePath() {
         board.forEach((row) => fillNodes(row.filter((tile) => tile.step === step), ctx));
       }
 
-      await delayedClearAndDraw(300);
-    }, 100);
+      await delayedClearAndDraw(150);
+    }, 50);
   }
   ctx.fillStyle = 'white';
 
   for (const tile of path.slice().reverse()) {
     ctx.fillRect(tile.x * TILE_SIZE, tile.y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
-    await delayedClearAndDraw(15);
+    await delayedClearAndDraw(12);
   }
 
   for (let index = 0; index < 5; index++) {
