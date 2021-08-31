@@ -9,3 +9,7 @@ const RIGHT = 2;
 const BOTTOM = 3;
 const LEFT = 4;
 const EMPTY = 0;
+function getCanvas() {
+  const canvas = document.getElementById('canvas');
+  return [canvas, canvas.getContext('2d')];
+}
