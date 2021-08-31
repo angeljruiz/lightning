@@ -16,21 +16,6 @@ function drawSides() {
   ctx.stroke();
 }
 
-function drawBoard() {
-  const ctx = clearCanvas();
-
-  for (let x = 0; x < ROWS; x++) {
-    for (let y = 0; y < COLS; y++) {
-      const selectedTile = board[x][y];
-      ctx.beginPath();
-      drawTile(selectedTile, ctx);
-      ctx.closePath();
-    }
-  }
-
-  drawSides();
-}
-
 function setColor(tile, ctx) {
   switch (tile.color) {
     case START:
@@ -51,6 +36,8 @@ function setColor(tile, ctx) {
     case CURRENT:
       ctx.fillStyle = 'violet';
       break;
+    default:
+      ctx.fillStyle = 'violet';
   }
 }
 
@@ -92,16 +79,46 @@ function drawTile(tile, ctx) {
   // ctx.fillText(tile.y, tile.x * TILE_SIZE +12, tile.y * TILE_SIZE + 8)
 }
 
+function drawBoard() {
+  const ctx = clearCanvas();
+
+  for (let x = 0; x < ROWS; x++) {
+    for (let y = 0; y < COLS; y++) {
+      const tile = getTile(x, y);
+      ctx.beginPath();
+      drawTile(tile, ctx);
+      ctx.closePath();
+    }
+  }
+
+  drawSides();
+}
+
 function fillNodes(nodes, ctx) {
   nodes.forEach((tile) => {
     ctx.fillRect(tile.x * TILE_SIZE, tile.y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
   });
 }
 
+function createDelay(callback, delay) {
+  return new Promise((resolve) => setTimeout(() => {
+    callback();
+    resolve();
+  }, delay));
+}
+
+async function delayedClearAndDraw(delay) {
+  await createDelay(() => {
+    clearCanvas();
+    drawBoard();
+  }, delay);
+}
+
 async function animatePath() {
   const [_, ctx] = getCanvas();
+
   for (const node of path) {
-    await new Promise((resolve) => setTimeout(async () => {
+    await createDelay(async () => {
       ctx.fillStyle = 'white';
       ctx.fillRect(node.x * TILE_SIZE, node.y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
 
@@ -111,40 +128,23 @@ async function animatePath() {
         board.forEach((row) => fillNodes(row.filter((tile) => tile.step === step), ctx));
       }
 
-      await new Promise((resolve) => setTimeout(() => {
-        clearCanvas();
-        drawBoard();
-        resolve();
-      }, 125));
-      resolve();
-    }, 50));
+      await delayedClearAndDraw(300);
+    }, 100);
   }
   ctx.fillStyle = 'white';
 
-  for (let tile of path.slice().reverse()) {
+  for (const tile of path.slice().reverse()) {
     ctx.fillRect(tile.x * TILE_SIZE, tile.y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
-    await new Promise((resolve) => setTimeout(() => {
-      clearCanvas();
-      drawBoard();
-      resolve();
-    }, 15));
+    await delayedClearAndDraw(15);
   }
 
   for (let index = 0; index < 5; index++) {
     fillNodes(path, ctx);
-    await new Promise((resolve) => setTimeout(() => {
-      clearCanvas();
-      drawBoard();
-      resolve();
-    }, 10));
+    await delayedClearAndDraw(10);
 
-    await new Promise((resolve) => setTimeout(resolve, 50));
+    await createDelay(() => {}, 50);
   }
 
   fillNodes(path, ctx);
-  await new Promise((resolve) => setTimeout(() => {
-    clearCanvas();
-    drawBoard();
-    resolve();
-  }, 450));
+  await delayedClearAndDraw(450);
 }

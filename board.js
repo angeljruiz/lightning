@@ -1,12 +1,13 @@
-function findStartingPoint() {
-  let currTile = board[parseInt(ROWS / 2, 10)][0];
-  if (currTile.type === EMPTY) return currTile;
+let board; let start; let open; let closed;
+let curr;
 
-  while (board[currTile.x - 1] && board[currTile.x - 1][0].type !== EMPTY) {
-    currTile = board[currTile.x - 1][0];
-  }
-  if (currTile.type === EMPTY) return currTile;
-  return null;
+function invalidPos(x, y) {
+  return x < 0 || x >= ROWS || y < 0 || y >= COLS;
+}
+
+function getTile(x, y) {
+  if (invalidPos(x, y)) { return null; }
+  return board[x][y];
 }
 
 function resetBoard() {
@@ -22,29 +23,28 @@ function resetBoard() {
     }
   }
 
-  start = findStartingPoint();
-  if (!start) return resetBoard();
-  window.board = board;
+  start = getTile(parseInt(ROWS / 2, 10), 0);
 
   open.push(start);
 
   drawBoard();
 }
 
-function invalidPos(x, y) {
-  return x < 0 || x >= ROWS || y < 0 || y >= COLS;
-}
-
 function isOn(list, tile) { return list.find((t) => t === tile); }
 
-function invalidMove(x, y, offsetX, offsetY) {
-  if (invalidPos(x + offsetX, y + offsetY)) return true;
+function setNextTile() {
+  curr = open.pop();
+  closed.push(curr);
+}
 
-  const tile = board[x + offsetX][y + offsetY];
+function invalidMove(tile, offsetX, offsetY) {
+  const nextTile = getTile(tile.x + offsetX, tile.y + offsetY);
 
-  return Tile.isWall(tile, x, y)
-    || isOn(closed, tile)
-    || isOn(open, tile);
+  if (Tile.isOrigin(offsetX, offsetY) || !nextTile) return true;
+
+  return Tile.isWall(nextTile, tile)
+    || isOn(closed, nextTile)
+    || isOn(open, nextTile);
 }
 
 function addToOpen(tile) {
@@ -59,7 +59,7 @@ function addToOpen(tile) {
 
 function generatePath() {
   path = [open[open.length - 1]];
-  let curr = path[0];
+  [curr] = path;
   // curr.color = END
 
   while (curr.parent !== null) {
@@ -69,6 +69,3 @@ function generatePath() {
   }
   path = path.reverse();
 }
-
-let board; let start; let open; let closed; let
-  curr;

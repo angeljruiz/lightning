@@ -20,32 +20,25 @@ class Tile {
   }
 
   static getDistance(a, b) {
-    let x = Math.abs(a.x - b.x);
-    let y = Math.abs(a.y - b.y);
+    const x = Math.abs(a.x - b.x);
+    const y = Math.abs(a.y - b.y);
     let total = 0;
 
-    while (x > 0 && y > 0) {
-      total += 14;
-      x -= 1;
-      y -= 1;
-    }
     total += x * 10;
     total += y * 10;
 
     return total;
   }
 
-  static isWall(tile, x, y) {
-    const currTile = board[x][y];
-
-    if (tile.y < y) {
-      return !!(tile.type === BOTTOM || currTile.type === TOP);
-    } if (tile.y > y) {
-      return !!(tile.type === TOP || currTile.type === BOTTOM);
-    } if (tile.x < x) {
-      return !!(tile.type === RIGHT || currTile.type === LEFT);
-    } if (tile.x > x) {
-      return !!(tile.type === LEFT || currTile.type === RIGHT);
+  static isWall(tile, nextTile) {
+    if (tile.y < nextTile.y) {
+      return !!(tile.type === BOTTOM || nextTile.type === TOP);
+    } if (tile.y > nextTile.y) {
+      return !!(tile.type === TOP || nextTile.type === BOTTOM);
+    } if (tile.x < nextTile.x) {
+      return !!(tile.type === RIGHT || nextTile.type === LEFT);
+    } if (tile.x > nextTile.x) {
+      return !!(tile.type === LEFT || nextTile.type === RIGHT);
     }
 
     return false;
