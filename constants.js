@@ -1,0 +1,11 @@
+const WIDTH = 320;
+const HEIGHT = 832;
+const TILE_SIZE = 32;
+const ROWS = WIDTH / TILE_SIZE;
+const COLS = HEIGHT / TILE_SIZE;
+const [START, CURRENT, WALL, OPEN, CLOSED, END] = [1, 2, 3, 4, 5, 6];
+const TOP = 1;
+const RIGHT = 2;
+const BOTTOM = 3;
+const LEFT = 4;
+const EMPTY = 0;
