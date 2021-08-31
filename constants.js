@@ -1,5 +1,5 @@
 const WIDTH = 320;
-const HEIGHT = 832;
+const HEIGHT = 640;
 const TILE_SIZE = 32;
 const ROWS = WIDTH / TILE_SIZE;
 const COLS = HEIGHT / TILE_SIZE;
