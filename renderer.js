@@ -4,16 +4,18 @@ function clearCanvas() {
   return ctx;
 }
 
-function drawSides() {
+function drawLine(x, y, toX, toY) {
   const [_, ctx] = getCanvas();
-
-  ctx.moveTo(0, 0);
-  ctx.lineTo(0, HEIGHT);
+  ctx.beginPath();
+  ctx.moveTo(x, y);
+  ctx.lineTo(toX, toY);
   ctx.stroke();
+  ctx.closePath();
+}
 
-  ctx.moveTo(WIDTH, 0);
-  ctx.lineTo(WIDTH, HEIGHT);
-  ctx.stroke();
+function drawSides() {
+  drawLine(0, 0, 0, HEIGHT);
+  drawLine(WIDTH, 0, WIDTH, HEIGHT);
 }
 
 function setColor(tile, ctx) {
@@ -23,9 +25,6 @@ function setColor(tile, ctx) {
       break;
     case END:
       ctx.fillStyle = 'red';
-      break;
-    case WALL:
-      ctx.fillStyle = 'blue';
       break;
     case CLOSED:
       ctx.fillStyle = 'red';
@@ -41,63 +40,60 @@ function setColor(tile, ctx) {
   }
 }
 
-function drawTile(tile, ctx) {
-  ctx.strokeStyle = 'white';
+function drawTile(tile) {
+  const [_, ctx] = getCanvas();
+  const {
+    xPosition, fullXPosition, yPosition, fullYPosition,
+  } = tile;
+  ctx.fillStyle = 'white';
+  let coords = {};
+
   switch (tile.type) {
     case TOP:
-      ctx.moveTo(tile.x * TILE_SIZE, tile.y * TILE_SIZE);
-      ctx.lineTo(tile.x * TILE_SIZE + TILE_SIZE, tile.y * TILE_SIZE);
-      ctx.stroke();
+      coords = {
+        x: xPosition(), y: yPosition(), toX: fullXPosition(), toY: yPosition(),
+      };
       break;
     case RIGHT:
-      ctx.moveTo(tile.x * TILE_SIZE + TILE_SIZE, tile.y * TILE_SIZE);
-      ctx.lineTo(tile.x * TILE_SIZE + TILE_SIZE, tile.y * TILE_SIZE + TILE_SIZE);
-      ctx.stroke();
+      coords = {
+        x: fullXPosition(), y: yPosition(), toX: fullXPosition(), toY: fullYPosition(),
+      };
       break;
     case BOTTOM:
-      ctx.moveTo(tile.x * TILE_SIZE, tile.y * TILE_SIZE + TILE_SIZE);
-      ctx.lineTo(tile.x * TILE_SIZE + TILE_SIZE, tile.y * TILE_SIZE + TILE_SIZE);
-      ctx.stroke();
+      coords = {
+        x: xPosition(), y: fullYPosition(), toX: fullXPosition(), toY: fullYPosition(),
+      };
       break;
     case LEFT:
-      ctx.moveTo(tile.x * TILE_SIZE, tile.y * TILE_SIZE);
-      ctx.lineTo(tile.x * TILE_SIZE, tile.y * TILE_SIZE + TILE_SIZE);
-      ctx.stroke();
+      coords = {
+        x: xPosition(), y: yPosition(), toX: xPosition(), toY: fullYPosition(),
+      };
       break;
 
     default:
       break;
   }
+  drawLine(...Object.values(coords));
 
   if (tile.color !== EMPTY) {
     setColor(tile, ctx);
-    ctx.fillRect(tile.x * TILE_SIZE, tile.y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
+    ctx.fillRect(xPosition(), yPosition(), TILE_SIZE, TILE_SIZE);
   }
 
   // ctx.fillStyle = 'white';
-  // ctx.fillText(tile.x, tile.x * TILE_SIZE, tile.y * TILE_SIZE + 8)
-  // ctx.fillText(tile.y, tile.x * TILE_SIZE +12, tile.y * TILE_SIZE + 8)
+  // ctx.fillText(tile.x, tile.xPosition(), tile.yPosition() + 8)
+  // ctx.fillText(tile.y, tile.xPosition() +12, tile.yPosition() + 8)
 }
 
 function drawBoard() {
-  const ctx = clearCanvas();
-
-  for (let x = 0; x < ROWS; x++) {
-    for (let y = 0; y < COLS; y++) {
-      const tile = getTile(x, y);
-      ctx.beginPath();
-      drawTile(tile, ctx);
-      ctx.closePath();
-    }
-  }
+  const [_] = getCanvas();
+  board.forEach((row, x) => row.forEach((__, y) => drawTile(getTile(x, y))));
 
   drawSides();
 }
 
 function fillNodes(nodes, ctx) {
-  nodes.forEach((tile) => {
-    ctx.fillRect(tile.x * TILE_SIZE, tile.y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
-  });
+  nodes.forEach((tile) => ctx.fillRect(tile.xPosition(), tile.yPosition(), TILE_SIZE, TILE_SIZE));
 }
 
 function createDelay(callback, delay) {
@@ -119,8 +115,7 @@ async function animatePath() {
 
   for (const node of path) {
     await createDelay(async () => {
-      ctx.fillStyle = 'white';
-      ctx.fillRect(node.x * TILE_SIZE, node.y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
+      ctx.fillRect(node.xPosition(), node.yPosition(), TILE_SIZE, TILE_SIZE);
 
       for (let step = node.step - 1; step >= node.step - 4 && step >= 1; step--) {
         ctx.fillStyle = `rgba(255, 255, 255, ${1 - (0.3 * (node.step - step))})`;
@@ -131,10 +126,9 @@ async function animatePath() {
       await delayedClearAndDraw(150);
     }, 50);
   }
-  ctx.fillStyle = 'white';
 
   for (const tile of path.slice().reverse()) {
-    ctx.fillRect(tile.x * TILE_SIZE, tile.y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
+    ctx.fillRect(tile.xPosition(), tile.yPosition(), TILE_SIZE, TILE_SIZE);
     await delayedClearAndDraw(12);
   }
 

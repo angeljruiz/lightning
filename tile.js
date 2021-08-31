@@ -1,15 +1,27 @@
 class Tile {
-  constructor(x, y, type) {
+  constructor(x, y) {
     this.x = x;
     this.y = y;
     this.f = -1;
     this.g = -1;
     this.h = -1;
-    this.type = type;
+    this.type = Tile.generateType();
     this.step = 0;
     this.color = 0;
     this.parent = null;
+    this.xPosition = this.xPosition.bind(this);
+    this.yPosition = this.yPosition.bind(this);
+    this.fullXPosition = this.fullXPosition.bind(this);
+    this.fullYPosition = this.fullYPosition.bind(this);
   }
+
+  xPosition() { return this.x * TILE_SIZE; }
+
+  fullXPosition() { return this.xPosition() + TILE_SIZE; }
+
+  yPosition() { return this.y * TILE_SIZE; }
+
+  fullYPosition() { return this.yPosition() + TILE_SIZE; }
 
   static generateType() {
     const chance = Math.random();
@@ -19,16 +31,7 @@ class Tile {
     return EMPTY;
   }
 
-  static getDistance(a, b) {
-    const x = Math.abs(a.x - b.x);
-    const y = Math.abs(a.y - b.y);
-    let total = 0;
-
-    total += x * 10;
-    total += y * 10;
-
-    return total;
-  }
+  static getDistance(a, b) { return Math.abs(a.x - b.x) + Math.abs(a.y - b.y); }
 
   static isWall(tile, nextTile) {
     if (tile.y < nextTile.y) {

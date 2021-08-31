@@ -2,16 +2,11 @@ let path;
 
 function step() {
   setNextTile();
-
   for (let offset = 1; offset >= -1; offset--) {
     if (!invalidMove(curr, 0, offset)) {
       const selectedTileY = getTile(curr.x, curr.y + offset);
 
-      addToOpen(selectedTileY);
-      if (selectedTileY.y === COLS - 1) {
-        generatePath();
-        return true;
-      }
+      if (addToOpen(selectedTileY)) return true;
     }
 
     if (!invalidMove(curr, offset, 0)) {
@@ -25,9 +20,11 @@ function step() {
 }
 
 async function init() {
-  const [canvas] = getCanvas();
+  const [canvas, ctx] = getCanvas();
   canvas.width = WIDTH;
   canvas.height = HEIGHT;
+  ctx.strokeStyle = 'white';
+
   resetBoard();
 
   while (open.length >= 1) {
@@ -35,8 +32,6 @@ async function init() {
   }
 
   if (open.length === 0) return init();
-
-  generatePath();
 }
 
 init();
