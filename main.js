@@ -1,19 +1,16 @@
 let canvas; let ctx; let path;
 
+function inspectMove(x, y) {
+  if (invalidMove(curr, x, y)) return;
+  const tile = getTile(curr.x + x, curr.y + y);
+
+  if (addToOpen(tile)) return true;
+}
+
 function step() {
   setNextTile();
-  for (let offset = 1; offset >= -1; offset--) {
-    if (!invalidMove(curr, 0, offset)) {
-      const selectedTileY = getTile(curr.x, curr.y + offset);
 
-      if (addToOpen(selectedTileY)) return true;
-    }
-
-    if (!invalidMove(curr, offset, 0)) {
-      const selectedTileX = getTile(curr.x + offset, curr.y);
-      addToOpen(selectedTileX);
-    }
-  }
+  for (let offset = 1; offset >= -1; offset--) if (inspectMove(0, offset) || inspectMove(offset, 0)) return true;
 
   open.sort((a, b) => (a.f > b.f ? -1 : 1));
   // if (open.length > 0) open[open.length - 1].color = CURRENT

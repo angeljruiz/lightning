@@ -124,11 +124,8 @@ async function animatePath() {
     await createDelay(null, 12);
   }
 
-  for (let index = 0; index < 5; index++) {
+  for (let index = 0; index < 6; index++) {
     fillNodes(path);
-    await createDelay(null, 10, 50);
+    await createDelay(null, index === 5 ? 450 : 10, index === 5 ? null : 50);
   }
-
-  fillNodes(path);
-  await createDelay(null, 450);
 }
